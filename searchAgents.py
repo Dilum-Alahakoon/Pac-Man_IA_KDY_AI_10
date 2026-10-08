@@ -38,6 +38,7 @@ from typing import List, Tuple, Any
 from game import Directions
 from game import Agent
 from game import Actions
+import itertools   # add this at the top with the other imports
 import util
 import time
 import search
@@ -360,7 +361,22 @@ def cornersHeuristic(state: Any, problem: CornersProblem):
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
     "*** YOUR CODE HERE ***"
-    return 0 # Default to trivial solution
+    
+    from itertools import permutations
+    position, visited = state
+    remaining = [c for c, v in zip(corners, visited) if not v]
+    if not remaining:
+        return 0
+
+    best = float('inf')
+    for order in permutations(remaining):
+        total = 0
+        current = position
+        for corner in order:
+            total += util.manhattanDistance(current, corner)
+            current = corner
+        best = min(best, total)
+    return best
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
